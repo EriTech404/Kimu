@@ -1,0 +1,38 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+
+# Build artifacts
+dist/
+**/dist/
+target/
+**/target/
+build/
+bin/
+obj/
+out/
+
+# Binary files and archives
+*.exe
+*.dll
+*.so
+*.dylib
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.dmg
+*.iso
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.*.local
