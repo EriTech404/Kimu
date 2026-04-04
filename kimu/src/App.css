@@ -225,3 +225,240 @@ button {
 .btn-ghost:hover {
   background-color: rgba(130, 170, 255, 0.1);
 }
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--owl-muted);
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Search Bar */
+.search-bar-container {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--owl-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 44px;
+  background: var(--owl-surface);
+  border: 1px solid var(--owl-border);
+  color: var(--owl-text);
+  border-radius: 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: var(--owl-muted);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--owl-accent-blue);
+  box-shadow: 0 0 0 2px rgba(130, 170, 255, 0.2);
+}
+
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--owl-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+.search-clear:hover {
+  color: var(--owl-text);
+  background: rgba(130, 170, 255, 0.1);
+}
+
+/* Tag Add Form */
+.tag-add-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tag-add-input {
+  flex: 1;
+  padding: 12px 16px;
+  background: var(--owl-surface);
+  border: 1px solid var(--owl-border);
+  color: var(--owl-text);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.tag-add-input::placeholder {
+  color: var(--owl-muted);
+}
+
+.tag-add-input:focus {
+  outline: none;
+  border-color: var(--owl-accent-blue);
+  box-shadow: 0 0 0 2px rgba(130, 170, 255, 0.2);
+}
+
+/* Tags Grid */
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.tag-card {
+  background: var(--owl-surface);
+  border: 1px solid var(--owl-border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.tag-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--owl-accent-cyan);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.tag-card-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--owl-accent-cyan);
+}
+
+.tag-card-name-btn {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--owl-accent-cyan);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.tag-card-name-btn:hover {
+  color: var(--owl-accent-blue);
+}
+
+.tag-card-count {
+  font-size: 0.85rem;
+  color: var(--owl-muted);
+}
+
+/* Settings Page */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.settings-section {
+  background: var(--owl-surface);
+  border: 1px solid var(--owl-border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.settings-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--owl-text);
+  margin: 0 0 16px 0;
+}
+
+.settings-description {
+  color: var(--owl-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.settings-description code {
+  background: var(--owl-bg);
+  color: var(--owl-accent-cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.settings-step {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--owl-border);
+}
+
+.settings-step h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--owl-accent-blue);
+  margin: 0 0 8px 0;
+}
+
+.code-block {
+  background: var(--owl-bg);
+  border: 1px solid var(--owl-border);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  color: var(--owl-accent-cyan);
+  overflow-x: auto;
+  line-height: 1.6;
+  margin: 12px 0;
+  white-space: pre;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.about-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.about-label {
+  font-size: 0.8rem;
+  color: var(--owl-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.about-value {
+  font-size: 1rem;
+  color: var(--owl-text);
+  font-weight: 500;
+}

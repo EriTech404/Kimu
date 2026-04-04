@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchTags, addTag } from '../lib/api';
 
 interface AddKeyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (name: string, value: string, tag: string, memo: string) => void;
+  onAdd: (name: string, value: string, tag: string, memo: string) => Promise<void>;
 }
 
 export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps) {
@@ -12,20 +13,41 @@ export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps
   const [tag, setTag] = useState('');
   const [memo, setMemo] = useState('');
   const [showValue, setShowValue] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchTags()
+        .then(setAvailableTags)
+        .catch((err) => console.error("Failed to load tags:", err));
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && value) {
-      onAdd(name, value, tag, memo);
-      // Reset form
+    if (!name || !value) return;
+
+    setIsSaving(true);
+    try {
+      const trimmedTag = tag.trim();
+      if (trimmedTag && !availableTags.includes(trimmedTag)) {
+        await addTag(trimmedTag);
+      }
+
+      await onAdd(name, value, trimmedTag, memo);
       setName('');
       setValue('');
       setTag('');
       setMemo('');
       setShowValue(false);
       onClose();
+    } catch {
+      // Error is handled by the parent via alert
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -45,14 +67,14 @@ export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps
               required
             />
           </div>
-          
+
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <label htmlFor="keyValue" style={{ margin: 0 }}>Key Value</label>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setShowValue(!showValue)}
-                style={{ fontSize: '0.8rem', padding: '2px 8px', color: 'var(--ios-blue)' }}
+                style={{ fontSize: '0.8rem', padding: '2px 8px', color: 'var(--owl-accent-blue)' }}
                 className="btn-ghost"
               >
                 {showValue ? 'Hide' : 'Show'}
@@ -73,10 +95,17 @@ export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps
             <input
               id="keyTag"
               type="text"
+              list="tagSuggestions"
               value={tag}
               onChange={(e) => setTag(e.target.value)}
-              placeholder="e.g. Work, Personal, Dev"
+              placeholder="Select or type a new tag..."
+              autoComplete="off"
             />
+            <datalist id="tagSuggestions">
+              {availableTags.map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
           </div>
 
           <div className="form-group">
@@ -86,13 +115,13 @@ export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="Additional notes..."
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '12px', 
-                border: '1px solid var(--ios-border)',
-                background: 'var(--ios-card-bg)',
-                color: 'var(--ios-text)',
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                border: '1px solid var(--owl-border)',
+                background: 'var(--owl-bg)',
+                color: 'var(--owl-text)',
                 fontFamily: 'inherit',
                 minHeight: '80px',
                 resize: 'none'
@@ -104,8 +133,8 @@ export default function AddKeyModal({ isOpen, onClose, onAdd }: AddKeyModalProps
             <button type="button" className="btn-ghost" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              Add Key
+            <button type="submit" className="btn-primary" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Add Key"}
             </button>
           </div>
         </form>
