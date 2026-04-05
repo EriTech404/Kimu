@@ -44,6 +44,15 @@ fn update_secret_meta(
 }
 
 #[tauri::command]
+fn update_secret_value(
+    name: &str,
+    value: &str,
+    state: tauri::State<'_, SecretManager>,
+) -> Result<(), String> {
+    state.update_secret_value(name, value).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn get_tags(state: tauri::State<'_, SecretManager>) -> Result<Vec<String>, String> {
     state.get_tags().map_err(|e| e.to_string())
 }
@@ -80,6 +89,7 @@ pub fn run() {
             delete_secret,
             list_secrets,
             update_secret_meta,
+            update_secret_value,
             get_tags,
             add_tag,
             remove_tag,

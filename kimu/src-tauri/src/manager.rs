@@ -131,6 +131,18 @@ impl SecretManager {
         Ok(value)
     }
 
+    pub fn update_secret_value(&self, name: &str, value: &str) -> Result<(), SecretError> {
+        let manifest = self.manifest.lock().unwrap();
+
+        if !manifest.keys.iter().any(|k| k.name == name) {
+            return Err(SecretError::NotFound(name.to_string()));
+        }
+
+        let entry = Self::keyring_entry(name)?;
+        entry.set_password(value)?;
+        Ok(())
+    }
+
     pub fn delete_secret(&self, name: &str) -> Result<(), SecretError> {
         let mut manifest = self.manifest.lock().unwrap();
 

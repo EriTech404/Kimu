@@ -28,6 +28,13 @@ export async function deleteSecret(name: string): Promise<void> {
   return invoke("delete_secret", { name });
 }
 
+export async function updateSecretValue(
+  name: string,
+  value: string
+): Promise<void> {
+  return invoke("update_secret_value", { name, value });
+}
+
 export async function updateSecretMeta(
   name: string,
   updates: { tag?: string; memo?: string; is_favorite?: boolean }

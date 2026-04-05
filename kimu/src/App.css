@@ -100,6 +100,9 @@ header h1 {
   font-weight: 600;
   font-size: 1.2rem;
   color: var(--owl-text);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .key-value-container {
@@ -181,6 +184,11 @@ header h1 {
   box-sizing: border-box;
   font-size: 1rem;
   transition: border-color 0.2s ease;
+}
+
+.form-group input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .form-group input:focus, .form-group textarea:focus {

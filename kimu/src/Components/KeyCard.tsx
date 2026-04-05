@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { revealSecret, deleteSecret, updateSecretMeta } from '../lib/api';
+import EditKeyModal from './EditKeyModal';
 
 interface KeyCardProps {
   name: string;
@@ -13,6 +14,7 @@ export default function KeyCard({ name, tag, memo, isFavorite, onRefresh }: KeyC
   const [isRevealed, setIsRevealed] = useState(false);
   const [revealedValue, setRevealedValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleRevealClick = async () => {
     if (isRevealed) {
@@ -72,86 +74,123 @@ export default function KeyCard({ name, tag, memo, isFavorite, onRefresh }: KeyC
     }
   };
 
+  const handleEditSaved = () => {
+    setIsRevealed(false);
+    setRevealedValue('');
+    onRefresh();
+  };
+
   return (
-    <div className="key-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button
-            onClick={handleToggleFavorite}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0',
-              display: 'flex',
-              fontSize: '1.1rem',
-              lineHeight: '1',
-              filter: isFavorite ? 'none' : 'grayscale(1) opacity(0.4)',
-              transition: 'filter 0.2s',
-            }}
-            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            {"\u2B50"}
-          </button>
-          <div className="key-card-header">{name}</div>
+    <>
+      <div className="key-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <button
+              type="button"
+              onClick={handleToggleFavorite}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0',
+                display: 'flex',
+                fontSize: '1.1rem',
+                lineHeight: '1',
+                filter: isFavorite ? 'none' : 'grayscale(1) opacity(0.4)',
+                transition: 'filter 0.2s',
+                flexShrink: 0,
+              }}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              {"\u2B50"}
+            </button>
+            <div className="key-card-header">{name}</div>
+          </div>
+          {tag && (
+            <span style={{
+              fontSize: '0.7rem',
+              background: 'var(--owl-accent-cyan)',
+              color: 'var(--owl-bg)',
+              padding: '2px 8px',
+              borderRadius: '10px',
+              fontWeight: '700',
+              flexShrink: 0,
+            }}>
+              {tag}
+            </span>
+          )}
         </div>
-        {tag && (
-          <span style={{
-            fontSize: '0.7rem',
-            background: 'var(--owl-accent-cyan)',
-            color: 'var(--owl-bg)',
-            padding: '2px 8px',
-            borderRadius: '10px',
-            fontWeight: '700',
-            flexShrink: 0,
-          }}>
-            {tag}
+
+        <div className="key-value-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span
+            className={isRevealed ? "" : "key-value-masked"}
+            style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}
+          >
+            {isLoading ? "Loading..." : isRevealed ? revealedValue : "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"}
           </span>
+          <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
+            <button
+              type="button"
+              onClick={handleRevealClick}
+              disabled={isLoading}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
+              title={isRevealed ? "Hide" : "Show"}
+            >
+              {isRevealed ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleCopy}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
+              title="Copy"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditOpen(true)}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
+              title="Edit"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
+              title="Delete"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef5350" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        {memo && (
+          <div style={{
+            fontSize: '0.85rem',
+            color: 'var(--owl-muted)',
+            marginTop: '4px',
+            fontStyle: 'italic',
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
+          }}>
+            {memo}
+          </div>
         )}
       </div>
 
-      <div className="key-value-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span
-          className={isRevealed ? "" : "key-value-masked"}
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}
-        >
-          {isLoading ? "Loading..." : isRevealed ? revealedValue : "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"}
-        </span>
-        <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
-          <button
-            onClick={handleRevealClick}
-            disabled={isLoading}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
-            title={isRevealed ? "Hide" : "Show"}
-          >
-            {isRevealed ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            )}
-          </button>
-          <button
-            onClick={handleCopy}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
-            title="Copy"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--owl-accent-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          </button>
-          <button
-            onClick={handleDelete}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex' }}
-            title="Delete"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef5350" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          </button>
-        </div>
-      </div>
-
-      {memo && (
-        <div style={{ fontSize: '0.85rem', color: 'var(--owl-muted)', marginTop: '4px', fontStyle: 'italic' }}>
-          {memo}
-        </div>
-      )}
-    </div>
+      <EditKeyModal
+        isOpen={isEditOpen}
+        name={name}
+        currentTag={tag ?? ''}
+        currentMemo={memo ?? ''}
+        onClose={() => setIsEditOpen(false)}
+        onSaved={handleEditSaved}
+      />
+    </>
   );
 }
